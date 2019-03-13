@@ -28,11 +28,17 @@ public class ImportOnDemandHandler implements ApplCreateDocumentsExtensionServic
   public Consumer<PluginProcessContainer> beforeUpdateSession()
   {
     return procContainer -> {
+      String application = procContainer.getParameter(DATAKEY_APPLICATION);
+      ectrService.getPlmLogger().trace(this.getClass().getName()+": application: "+application);
       Collection<ApplFileDocument> fileDocs = procContainer.getParameter(DATAKEY_FILE_DOCUMENTS);
 
       ectrService.getPlmLogger().trace(this.getClass().getName()+": documents to process: "+fileDocs.size());
       fileDocs.forEach(fileDoc -> {
+        ectrService.getPlmLogger().trace(this.getClass().getName()+": attributes: ");
+        fileDoc.getApplicationAttributes().stream().forEach(attribute -> ectrService.getPlmLogger().trace("  "+attribute.getName() + "='" +attribute.getValue()+"'"));
         ObjectData objDataForDoc = fileDoc.getDocumentData();
+        ectrService.getPlmLogger().trace(this.getClass().getName()+": document data: ");
+        objDataForDoc.objectData().forEach((key, value) -> ectrService.getPlmLogger().trace("  "+key + "='" +value+"'"));
         String newFileName = objDataForDoc.objectData().get(ApplCreateDocumentsConstants.APPL_CREATE_DOC_NEW_FILE);
         File newFile = new File(newFileName);
         File path = newFile.getParentFile();
